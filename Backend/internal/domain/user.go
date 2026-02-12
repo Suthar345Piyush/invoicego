@@ -25,10 +25,10 @@ type User struct {
 	LogoURL             *string    `json:"logo_url,omitempty"`
 	SubscriptionTier    string     `json:"subscription_tier"`
 	SubscriptionStatus  string     `json:"subscription_status"`
-	MonthlyInvoiceCount string     `json:"monthly_invoice_count"`
-	MonthlyInvoiceLimit string     `json:"monthly_invoice_limit"`
+	MonthlyInvoiceCount int        `json:"monthly_invoice_count"`
+	MonthlyInvoiceLimit int        `json:"monthly_invoice_limit"`
 	DefaultCurrency     string     `json:"default_currency"`
-	DefaultPaymentTerms string     `json:"default_payment_terms"`
+	DefaultPaymentTerms int        `json:"default_payment_terms"`
 	InvoiceNumberPrefix string     `json:"invoice_number_prefix"`
 	NextInvoiceNumber   int        `json:"next_invoice_number"`
 	EmailVerified       bool       `json:"email_verified"`
