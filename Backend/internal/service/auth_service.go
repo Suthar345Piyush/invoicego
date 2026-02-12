@@ -67,7 +67,7 @@ func (s *AuthService) Register(req *domain.RegisterRequest) (*domain.LoginRespon
 		return nil, err
 	}
 
-	// at last returning the login response
+	// at last returning the login response with it's parameters
 
 	return &domain.LoginResponse{
 		AccessToken:  accessToken,
@@ -80,5 +80,63 @@ func (s *AuthService) Register(req *domain.RegisterRequest) (*domain.LoginRespon
 // login process same taking login request and returning login response
 
 func (s *AuthService) Login(req *domain.LoginRequest) (*domain.LoginResponse, error) {
+
+	// validating input
+
+	if err := util.ValidateStruct(req); err != nil {
+		return nil, domain.ErrInvalidInput
+	}
+
+	// getting user by email
+
+	user, err := s.userService.GetUserByEmail(req.Email)
+	if err != nil {
+		return nil, domain.ErrInvalidCredentials
+	}
+
+	// verifying the password
+
+	if !util.CheckPassword(req.Password, user.PasswordHash) {
+		return nil, domain.ErrInvalidCredentials
+	}
+
+	// updating the last login of user
+
+	_ = s.userService.UpdateLastLogin(user.ID)
+
+	// generating tokens
+
+	// access token generation
+
+	accessToken, err := util.GenerateAccessToken(
+		user.ID,
+		user.Email,
+		s.jwtConfig.Secret,
+		s.jwtConfig.AccessExpiry,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// refresh token generation
+
+	refreshToken, err := util.GenerateRefreshToken(
+		user.ID,
+		s.jwtConfig.Secret,
+		s.jwtConfig.RefreshExpiry,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// at final returning the login response with parameters
+
+	return &domain.LoginResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		User:         user,
+	}, nil
 
 }
