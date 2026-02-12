@@ -53,7 +53,28 @@ func GenerateRefreshToken(userID uuid.UUID, secret string, expiry time.Duration)
 
 }
 
-// validating the token
+// TOKEN VALIDATION FUNCTION
+
+// here we are pointer to allow modification of struct
+
+//INTERNALS of this function -
+
+/*
+
+  - we passed &JWTClaims{}
+	- library fills it
+	- library stored it inside token.Claims  as interface
+	- then we are extracting it back and using it like this - .(*JWTClaims)
+
+
+	Some efficient use case of pointer are like -
+
+	 -> if we need to modify the struct , then use pointer
+	 -> if their is an large struct , then use pointer
+	 -> if we are just reading small amount of data , then don't use pointers
+	 -> to return data efficiently , use pointers
+
+*/
 
 func ValidateToken(tokenString, secret string) (*JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
