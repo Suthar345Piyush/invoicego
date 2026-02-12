@@ -3,6 +3,7 @@
 package service
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/Suthar345Piyush/invoicego/internal/database"
@@ -110,7 +111,64 @@ func (s *UserService) GetUserByEmail(email string) (*domain.User, error) {
 			  `
 
 	// queryRow at most returns a row after querying the table
+	//when scanning the columns , we have to pass their address
 
-	err := s.db.QueryRow(query, email).Scan()
+	err := s.db.QueryRow(query, email).Scan(
+		&user.ID, &user.Email, &user.PasswordHash, &user.FullName, &user.BusinessName, &user.BusinessEmail, &user.BusinessAddress, &user.BusinessPhone, &user.TaxID, &user.LogoURL, &user.SubscriptionStatus, &user.SubscriptionTier, &user.DefaultCurrency, &user.MonthlyInvoiceCount, &user.MonthlyInvoiceLimit, &user.InvoiceNumberPrefix, &user.NextInvoiceNumber, &user.LastLoginAt, &user.IsActive, &user.UpdatedAt, &user.CreatedAt, &user.EmailVerified,
+	)
+
+	// if any error not returned from row
+
+	if err == sql.ErrNoRows {
+		return nil, domain.ErrUserNotFound
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+
+}
+
+// getting user by the ID
+
+func (s *UserService) GetUserByID(id uuid.UUID) (*domain.User, error) {
+
+	user := &domain.User{}
+
+	// writing query
+
+	query := `
+			    SELECT id , email , password_hash , full_name , business_name , business_email , business_phone , business_address , tax_id , logo_url , subscription_tier , subscription_status , monthly_invoice_count , monthly_invoice_limit , default_currency , default_payment_terms , invoice_number_prefix , next_invoice_number , email_verified , is_active , created_at , updated_at , last_login_at FROM users WHERE id = $1 AND is_active = true
+			    `
+
+	err := s.db.QueryRow(query, id).Scan(
+		&user.ID, &user.Email, &user.PasswordHash, &user.FullName, &user.BusinessName, &user.BusinessAddress, &user.BusinessEmail, &user.BusinessPhone, &user.TaxID, &user.LogoURL, &user.SubscriptionTier, &user.SubscriptionStatus, &user.MonthlyInvoiceCount, &user.MonthlyInvoiceLimit, &user.DefaultCurrency, &user.DefaultPaymentTerms, &user.InvoiceNumberPrefix, &user.NextInvoiceNumber, &user.EmailVerified, &user.IsActive, &user.LastLoginAt, &user.UpdatedAt, &user.CreatedAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, domain.ErrUserNotFound
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+
+}
+
+// updating the lastLogin field in table , when new  user logged into
+
+func (s *UserService) UpdateLastLogin(userID uuid.UUID) error {
+
+	// query to update the user's last login time
+
+	query := `UPDATE users SET last_login_at = $1 WHERE id = $2`
+
+	_, err := s.db.Exec(query, time.Now(), userID)
+
+	return err
 
 }
