@@ -2,7 +2,9 @@
 
 package util
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
 
 // password hashing function
 
