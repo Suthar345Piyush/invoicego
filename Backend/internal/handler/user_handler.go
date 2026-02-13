@@ -5,6 +5,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/Suthar345Piyush/invoicego/internal/domain"
 	"github.com/Suthar345Piyush/invoicego/internal/middleware"
 	"github.com/Suthar345Piyush/invoicego/internal/service"
 	"github.com/Suthar345Piyush/invoicego/internal/util"
@@ -27,7 +28,7 @@ func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	claims, ok := middleware.GetUserFromContext(r.Context())
 
 	if !ok {
-		util.WriteError(w, http.StatusUnauthorized, util.errors.New("unauthorized"))
+		util.WriteError(w, http.StatusUnauthorized, domain.ErrUnauthorized)
 
 		return
 	}
