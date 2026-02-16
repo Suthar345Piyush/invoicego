@@ -19,8 +19,7 @@ vendor/
 # Go workspace file
 go.work
 
-# Environment variables
-.env
+
 
 # IDE
 .vscode/
@@ -35,3 +34,6 @@ Thumbs.db
 
 # Generated files
 internal/repository/sqlc/
+
+
+.env
