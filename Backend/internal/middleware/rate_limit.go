@@ -3,8 +3,11 @@
 package middleware
 
 import (
+	"net/http"
 	"sync"
 	"time"
+
+	"github.com/Suthar345Piyush/invoicego/internal/util"
 )
 
 // limit the user/visitor
@@ -60,4 +63,71 @@ func (rl *RateLimiter) cleanup() {
 
 	}
 
+}
+
+// allow user for requesting to the middleware
+
+func (rl *RateLimiter) Allow(ip string) bool {
+
+	rl.mu.Lock()
+
+	defer rl.mu.Unlock()
+
+	now := time.Now()
+	v, exists := rl.visitors[ip]
+
+	if !exists {
+		rl.visitors[ip] = &visitor{
+			lastSeen: now,
+			count:    1,
+		}
+		return true
+	}
+
+	//resetting the counter if window has passed
+
+	if now.Sub(v.lastSeen) > rl.window {
+		v.count = 1
+		v.lastSeen = now
+		return true
+	}
+
+	// incrementing the  counter
+
+	v.count++
+	v.lastSeen = now
+
+	return v.count <= rl.limit
+}
+
+// main rate limiter function
+
+func RateLimit(limit int, window time.Duration) func(http.Handler) http.Handler {
+
+	limiter := NewRateLimiter(limit, window)
+
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			ip := r.RemoteAddr
+
+			// extracting ip from X-Forwarded-For or X-Real-IP if behind proxy
+
+			if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+				ip = forwarded
+			} else if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
+				ip = realIP
+			}
+
+			if !limiter.Allow(ip) {
+				util.WriteJSON(w, http.StatusTooManyRequests, util.Response{
+					Success: false,
+					Error:   "rate limit exceeded, please try again later",
+				})
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }
