@@ -41,7 +41,7 @@ func main() {
 
 	defer db.Close()
 
-	// initializing the auth and user service
+	// initializing the auth , user and client service
 
 	userService := service.NewUserService(db)
 	authService := service.NewAuthService(userService, &cfg.JWT)
