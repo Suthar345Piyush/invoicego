@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/Suthar345Piyush/invoicego/internal/config"
 	"github.com/Suthar345Piyush/invoicego/internal/database"
@@ -44,11 +45,13 @@ func main() {
 
 	userService := service.NewUserService(db)
 	authService := service.NewAuthService(userService, &cfg.JWT)
+	clientService := service.NewClientService(db)
 
 	// initializing the auth and user handlers
 
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
+	clientHandler := handler.NewClientHandler(clientService)
 
 	// setting router using chi framework
 	//NewRouter returns a mux object which implements router interface
@@ -74,17 +77,33 @@ func main() {
 
 	r.Route("/api/v1", func(r chi.Router) {
 
-		// setting some public routes
+		// applying rate limiting on public routes
 
-		r.Post("/auth/register", authHandler.Register)
-		r.Post("/auth/login", authHandler.Login)
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.RateLimit(10, time.Minute)) // 10 req/minute
+			r.Post("/auth/register", authHandler.Register)
+			r.Post("/auth/login", authHandler.Login)
+		})
 
 		// protected routes
 
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.Auth(cfg.JWT.Secret))
 
+			// user routes
+
 			r.Get("/users/me", userHandler.GetMe)
+
+			// client routes
+
+			r.Route("/clients", func(r chi.Router) {
+				r.Get("/", clientHandler.ListClients)
+				r.Get("/", clientHandler.CreateClient)
+				r.Get("/{id}", clientHandler.GetClient)
+				r.Get("/{id}", clientHandler.UpdateClient)
+				r.Get("/{id}", clientHandler.DeleteClient)
+			})
+
 		})
 
 	})
