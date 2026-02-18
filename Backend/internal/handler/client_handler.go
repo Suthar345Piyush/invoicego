@@ -172,7 +172,7 @@ func (h *ClientHandler) UpdateClient(w http.ResponseWriter, r *http.Request) {
 	util.WriteSuccess(w, http.StatusOK, client, "Client updated successfully")
 }
 
-// deleting the client
+// delete client function
 
 func (h *ClientHandler) DeleteClient(w http.ResponseWriter, r *http.Request) {
 
