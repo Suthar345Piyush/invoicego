@@ -3,6 +3,9 @@
 package service
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/Suthar345Piyush/invoicego/internal/domain"
 	"github.com/jung-kurt/gofpdf"
 )
@@ -240,6 +243,85 @@ func (s *PDFService) addItemsTable(pdf *gofpdf.Fpdf, items []*domain.InvoiceItem
 
 	for _, item := range items {
 
+		pdf.CellFormat(90, 7, item.Description, "1", 0, "L", false, 0, "")
+		pdf.CellFormat(30, 7, fmt.Sprintf("%.2f", item.Quantity), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(35, 7, fmt.Sprintf("%.2f", item.UnitPrice), "1", 0, "R", false, 0, "")
+		pdf.CellFormat(35, 7, fmt.Sprintf("%.2f", item.Amount), "1", 1, "R", false, 0, "")
+
+	}
+	pdf.Ln(5)
+}
+
+// add totals function
+
+func (s *PDFService) addTotals(pdf *gofpdf.Fpdf, invoice *domain.Invoice) {
+
+	// positions for the totals
+
+	startX := 120.0
+
+	pdf.SetX(startX)
+	pdf.Cell(35, 6, "Subtotal:")
+	pdf.Cell(35, 6, fmt.Sprintf("%s %.2f", invoice.Currency, invoice.Subtotal))
+	pdf.Ln(6)
+
+	// tax part of the invoice
+
+	if invoice.TaxRate > 0 {
+		pdf.SetX(startX)
+		pdf.Cell(35, 6, fmt.Sprintf("Tax (%.2f%%):", invoice.TaxRate))
+		pdf.Cell(35, 6, fmt.Sprintf("%s %.2f", invoice.Currency, invoice.TaxAmount))
+		pdf.Ln(6)
 	}
 
+	// discount is greater than zero
+
+	if invoice.DiscountAmount > 0 {
+		pdf.SetX(startX)
+		pdf.Cell(35, 6, "Discount:")
+		pdf.Cell(35, 6, fmt.Sprintf("-%s %.2f", invoice.Currency, invoice.DiscountAmount))
+		pdf.Ln(6)
+	}
+
+	// final - total
+
+	pdf.SetFont("Arial", "B", 12)
+	pdf.SetX(startX)
+	pdf.Cell(35, 8, "Total:")
+	pdf.Cell(35, 8, fmt.Sprintf("%s %.2f", invoice.Currency, invoice.TotalAmount))
+	pdf.Ln(12)
+
+}
+
+// add notes and terms of the invoice
+
+func (s *PDFService) addNotesAndTerms(pdf *gofpdf.Fpdf, invoice *domain.Invoice) {
+
+	if invoice.Notes != nil && *invoice.Notes != "" {
+		pdf.SetFont("Arial", "B", 10)
+		pdf.Cell(0, 6, "Notes:")
+		pdf.Ln(5)
+		pdf.SetFont("Arial", "", 9)
+		pdf.MultiCell(0, 5, *invoice.Notes, "", "", false)
+		pdf.Ln(5)
+	}
+
+	if invoice.TermAndConditions != nil && *invoice.TermAndConditions != "" {
+		pdf.SetFont("Arial", "B", 10)
+		pdf.Cell(0, 6, "Terms & Conditions:")
+		pdf.Ln(5)
+		pdf.SetFont("Arial", "", 9)
+		pdf.MultiCell(0, 5, *invoice.TermAndConditions, "", "", false)
+		pdf.Ln(5)
+	}
+
+}
+
+// footer part of the invoice
+
+func (s *PDFService) addFooter(pdf *gofpdf.Fpdf) {
+	pdf.SetY(-20)
+	pdf.SetFont("Arial", "1", 8)
+	pdf.SetTextColor(128, 128, 128)
+	pdf.Cell(0, 10, fmt.Sprintf("Generated on %s", time.Now().Format("February 19 2026")))
 }
