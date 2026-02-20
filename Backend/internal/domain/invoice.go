@@ -7,33 +7,33 @@ import (
 )
 
 type Invoice struct {
-	ID                uuid.UUID      `json:"id"`
-	UserID            uuid.UUID      `json:"user_id"`
-	ClientID          uuid.UUID      `json:"client_id"`
-	InvoiceNumber     string         `json:"invoice_number"`
-	Status            string         `json:"status"`
-	IssueDate         time.Time      `json:"issue_date"`
-	DueDate           time.Time      `json:"due_date"`
-	PaidDate          *time.Time     `json:"paid_date,omitempty"`
-	Currency          string         `json:"currency"`
-	Subtotal          float64        `json:"subtotal"`
-	TaxRate           float64        `json:"tax_rate"`
-	TaxAmount         float64        `json:"tax_amount"`
-	DiscountAmount    float64        `json:"discount_amount"`
-	TotalAmount       float64        `json:"total_amount"`
-	TemplateID        string         `json:"template_id"`
-	Notes             *string        `json:"notes,omitempty"`
-	TermAndConditions *string        `json:"terms_and_conditions,omitempty"`
-	PDFURL            *string        `json:"pdf_url,omitempty"`
-	PDFGeneratedAt    *time.Time     `json:"pdf_generated_at,omitempty"`
-	EmailSent         bool           `json:"email_sent"`
-	EmailSentAt       *time.Time     `json:"email_sent_at,omitempty"`
-	EmailOpened       bool           `json:"email_opened"`
-	EmailOpenedAt     *time.Time     `json:"email_opened_at,omitempty"`
-	CreatedAt         time.Time      `json:"created_at"`
-	UpdatedAt         time.Time      `json:"updated_at"`
-	Items             []*InvoiceItem `json:"items,omitempty"`
-	Client            *Client        `json:"client,omitempty"`
+	ID                 uuid.UUID      `json:"id"`
+	UserID             uuid.UUID      `json:"user_id"`
+	ClientID           uuid.UUID      `json:"client_id"`
+	InvoiceNumber      string         `json:"invoice_number"`
+	Status             string         `json:"status"`
+	IssueDate          time.Time      `json:"issue_date"`
+	DueDate            time.Time      `json:"due_date"`
+	PaidDate           *time.Time     `json:"paid_date,omitempty"`
+	Currency           string         `json:"currency"`
+	Subtotal           float64        `json:"subtotal"`
+	TaxRate            float64        `json:"tax_rate"`
+	TaxAmount          float64        `json:"tax_amount"`
+	DiscountAmount     float64        `json:"discount_amount"`
+	TotalAmount        float64        `json:"total_amount"`
+	TemplateID         string         `json:"template_id"`
+	Notes              *string        `json:"notes,omitempty"`
+	TermsAndConditions *string        `json:"terms_and_conditions,omitempty"`
+	PDFURL             *string        `json:"pdf_url,omitempty"`
+	PDFGeneratedAt     *time.Time     `json:"pdf_generated_at,omitempty"`
+	EmailSent          bool           `json:"email_sent"`
+	EmailSentAt        *time.Time     `json:"email_sent_at,omitempty"`
+	EmailOpened        bool           `json:"email_opened"`
+	EmailOpenedAt      *time.Time     `json:"email_opened_at,omitempty"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	Items              []*InvoiceItem `json:"items,omitempty"`
+	Client             *Client        `json:"client,omitempty"`
 }
 
 type InvoiceItem struct {
@@ -49,16 +49,16 @@ type InvoiceItem struct {
 }
 
 type CreateInvoiceRequest struct {
-	ClientID          uuid.UUID               `json:"client_id" validate:"required"`
-	IssueDate         string                  `json:"issue_date" validate:"required"`
-	DueDate           string                  `json:"due_date" validate:"required"`
-	Currency          string                  `json:"currency" validate:"required, len=3"`
-	TaxRate           float64                 `json:"tax_rate" validate:"gte=0, lte=100"`
-	DiscountAmount    float64                 `json:"discount_amount" validate:"gte-0"`
-	TemplateID        string                  `json:"template_id"`
-	Notes             *string                 `json:"notes,omitempty"`
-	TermAndConditions *string                 `json:"terms_and_conditions,omitempty"`
-	Items             []*CreateInvoiceItemReq `json:"items" validation:"required, min=1, dive"`
+	ClientID           uuid.UUID               `json:"client_id" validate:"required"`
+	IssueDate          string                  `json:"issue_date" validate:"required"`
+	DueDate            string                  `json:"due_date" validate:"required"`
+	Currency           string                  `json:"currency" validate:"required, len=3"`
+	TaxRate            float64                 `json:"tax_rate" validate:"gte=0, lte=100"`
+	DiscountAmount     float64                 `json:"discount_amount" validate:"gte-0"`
+	TemplateID         string                  `json:"template_id"`
+	Notes              *string                 `json:"notes,omitempty"`
+	TermsAndConditions *string                 `json:"terms_and_conditions,omitempty"`
+	Items              []*CreateInvoiceItemReq `json:"items" validation:"required, min=1, dive"`
 }
 
 type CreateInvoiceItemReq struct {
