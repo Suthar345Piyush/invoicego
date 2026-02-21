@@ -46,12 +46,15 @@ func main() {
 	userService := service.NewUserService(db)
 	authService := service.NewAuthService(userService, &cfg.JWT)
 	clientService := service.NewClientService(db)
+	invoiceService := service.NewInvoiceService(db, userService)
+	pdfService := service.NewPDFService()
 
 	// initializing the auth and user handlers
 
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
 	clientHandler := handler.NewClientHandler(clientService)
+	invoiceHandler := handler.NewInvoiceHandler(invoiceService, pdfService, userService)
 
 	// setting router using chi framework
 	//NewRouter returns a mux object which implements router interface
@@ -98,10 +101,23 @@ func main() {
 
 			r.Route("/clients", func(r chi.Router) {
 				r.Get("/", clientHandler.ListClients)
-				r.Get("/", clientHandler.CreateClient)
+				r.Post("/", clientHandler.CreateClient)
 				r.Get("/{id}", clientHandler.GetClient)
-				r.Get("/{id}", clientHandler.UpdateClient)
-				r.Get("/{id}", clientHandler.DeleteClient)
+				r.Put("/{id}", clientHandler.UpdateClient)
+				r.Delete("/{id}", clientHandler.DeleteClient)
+			})
+
+			// invoice routes
+
+			r.Route("/invoices", func(r chi.Router) {
+				r.Get("/", invoiceHandler.ListInvoices)
+				r.Post("/", invoiceHandler.CreateInvoice)
+				r.Get("/stats", invoiceHandler.GetStats)
+				r.Get("/{id}", invoiceHandler.GetInvoice)
+				r.Patch("/{id}/status", invoiceHandler.UpdateInvoiceStatus)
+				r.Delete("/{id}", invoiceHandler.DeleteInvoice)
+				r.Post("/{id}/duplicate", invoiceHandler.DuplicateInvoice)
+				r.Get("/{id}/download", invoiceHandler.GeneratePDF)
 			})
 
 		})
@@ -110,7 +126,7 @@ func main() {
 
 	// at final starting the server and logging in terminal
 
-	addr := fmt.Sprintf("%s", cfg.Server.Port)
+	addr := fmt.Sprintf(":%s", cfg.Server.Port)
 	fmt.Printf("Server starting on http://localhost%s\n", addr)
 	fmt.Printf("Environment: %s\n", cfg.Server.Env)
 

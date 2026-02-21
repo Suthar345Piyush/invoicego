@@ -303,8 +303,7 @@ func (s *InvoiceService) GetInvoiceByUserID(userID uuid.UUID, page, pageSize int
 
 	if status != "" {
 		countQuery += ` AND status = %2`
-	args:
-		append(args, status)
+		args = append(args, status)
 	}
 
 	var total int
