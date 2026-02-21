@@ -481,11 +481,14 @@ func (s *InvoiceService) GetInvoiceStats(userID uuid.UUID) (*domain.InvoiceStats
 
 	stats := &domain.InvoiceStats{}
 
-	// query to get stats of the invoices
+	// query to get stats of the invoices for specific user
+	// COALESCE - returns first non-null value
+	// if SUM gives response in NULL , then COALESCE will choose first non null value which is zero (0) , as total_revenue , pending_revenue and overdue_revenue
+	// using COALESCE for avoiding null values , using COALESCE only with SUM , AVG , not with COUNT bcoz count already returns 0
 
 	query := `
 		     SELECT 
-				    COUNT(*) as total_invoices
+				    COUNT(*) as total_invoices,
 						COUNT(CASE WHEN status = 'draft' THEN 1 END) as draft_invoices,
 						COUNT(CASE WHEN status = 'sent' THEN 1 END) as sent_invoices,
 						COUNT(CASE WHEN status = 'paid' THEN 1 END) as paid_invoices,
