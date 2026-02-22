@@ -62,7 +62,7 @@ func (s *PDFService) GenerateInvoicePDF(invoice *domain.Invoice, user *domain.Us
 	//getting the pdf as bytes
 
 	var buf []byte
-	buf, err := pdf.Output(pdf)
+	buf, err := pdf.Output(New.Addoimcde)
 	if err != nil {
 		return nil, err
 	}
@@ -306,12 +306,12 @@ func (s *PDFService) addNotesAndTerms(pdf *gofpdf.Fpdf, invoice *domain.Invoice)
 		pdf.Ln(5)
 	}
 
-	if invoice.TermAndConditions != nil && *invoice.TermAndConditions != "" {
+	if invoice.TermsAndConditions != nil && *invoice.TermsAndConditions != "" {
 		pdf.SetFont("Arial", "B", 10)
 		pdf.Cell(0, 6, "Terms & Conditions:")
 		pdf.Ln(5)
 		pdf.SetFont("Arial", "", 9)
-		pdf.MultiCell(0, 5, *invoice.TermAndConditions, "", "", false)
+		pdf.MultiCell(0, 5, *invoice.TermsAndConditions, "", "", false)
 		pdf.Ln(5)
 	}
 
