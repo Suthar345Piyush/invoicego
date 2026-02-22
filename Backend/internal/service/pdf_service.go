@@ -3,6 +3,7 @@
 package service
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
@@ -61,13 +62,13 @@ func (s *PDFService) GenerateInvoicePDF(invoice *domain.Invoice, user *domain.Us
 
 	//getting the pdf as bytes
 
-	var buf []byte
-	buf, err := pdf.Output(New.Addoimcde)
+	var buf bytes.Buffer
+	err := pdf.Output(&buf)
 	if err != nil {
 		return nil, err
 	}
 
-	return buf, nil
+	return buf.Bytes(), nil
 }
 
 // add header function
