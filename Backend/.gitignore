@@ -36,4 +36,5 @@ Thumbs.db
 internal/repository/sqlc/
 
 
-.env
+# environment variables  
+.env 
