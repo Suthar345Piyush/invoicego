@@ -1,7 +1,6 @@
 -- QUERIES FOR THE INVOICES TABLE  
 
 CREATE TABLE IF NOT EXISTS  invoices (
-
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
@@ -86,7 +85,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
      -- created_at , updated_at 
 
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 );
 
