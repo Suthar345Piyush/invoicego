@@ -110,11 +110,15 @@ func (s *UserService) GetUserByEmail(email string) (*domain.User, error) {
 					last_login_at FROM users WHERE email = $1 AND is_active = true   
 			  `
 
-	// queryRow at most returns a row after querying the table
-	//when scanning the columns , we have to pass their address
+		// queryRow at most returns a row after querying the table
+		//when scanning the columns , we have to pass their address
+
+	// using sql.NullTime for nullable timestamp fields
+
+	var LastLoginAt sql.NullTime
 
 	err := s.db.QueryRow(query, email).Scan(
-		&user.ID, &user.Email, &user.PasswordHash, &user.FullName, &user.BusinessName, &user.BusinessEmail, &user.BusinessAddress, &user.BusinessPhone, &user.TaxID, &user.LogoURL, &user.SubscriptionStatus, &user.SubscriptionTier, &user.DefaultCurrency, &user.MonthlyInvoiceCount, &user.MonthlyInvoiceLimit, &user.InvoiceNumberPrefix, &user.NextInvoiceNumber, &user.LastLoginAt, &user.IsActive, &user.UpdatedAt, &user.CreatedAt, &user.EmailVerified,
+		&user.ID, &user.Email, &user.PasswordHash, &user.FullName, &user.BusinessName, &user.BusinessEmail, &user.BusinessAddress, &user.BusinessPhone, &user.TaxID, &user.LogoURL, &user.SubscriptionStatus, &user.SubscriptionTier, &user.DefaultCurrency, &user.MonthlyInvoiceCount, &user.MonthlyInvoiceLimit, &user.InvoiceNumberPrefix, &user.NextInvoiceNumber, &user.IsActive, &user.UpdatedAt, &user.CreatedAt, &user.EmailVerified, &LastLoginAt,
 	)
 
 	// if any error not returned from row
@@ -125,6 +129,12 @@ func (s *UserService) GetUserByEmail(email string) (*domain.User, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	// converting the sql.NullTime to *time.Time
+
+	if LastLoginAt.Valid {
+		user.LastLoginAt = &LastLoginAt.Time
 	}
 
 	return user, nil
@@ -143,8 +153,12 @@ func (s *UserService) GetUserByID(id uuid.UUID) (*domain.User, error) {
 			    SELECT id , email , password_hash , full_name , business_name , business_email , business_phone , business_address , tax_id , logo_url , subscription_tier , subscription_status , monthly_invoice_count , monthly_invoice_limit , default_currency , default_payment_terms , invoice_number_prefix , next_invoice_number , email_verified , is_active , created_at , updated_at , last_login_at FROM users WHERE id = $1 AND is_active = true
 			    `
 
+	// same here for get user by id
+
+	var LastLoginAt sql.NullTime
+
 	err := s.db.QueryRow(query, id).Scan(
-		&user.ID, &user.Email, &user.PasswordHash, &user.FullName, &user.BusinessName, &user.BusinessAddress, &user.BusinessEmail, &user.BusinessPhone, &user.TaxID, &user.LogoURL, &user.SubscriptionTier, &user.SubscriptionStatus, &user.MonthlyInvoiceCount, &user.MonthlyInvoiceLimit, &user.DefaultCurrency, &user.DefaultPaymentTerms, &user.InvoiceNumberPrefix, &user.NextInvoiceNumber, &user.EmailVerified, &user.IsActive, &user.LastLoginAt, &user.UpdatedAt, &user.CreatedAt,
+		&user.ID, &user.Email, &user.PasswordHash, &user.FullName, &user.BusinessName, &user.BusinessAddress, &user.BusinessEmail, &user.BusinessPhone, &user.TaxID, &user.LogoURL, &user.SubscriptionTier, &user.SubscriptionStatus, &user.MonthlyInvoiceCount, &user.MonthlyInvoiceLimit, &user.DefaultCurrency, &user.DefaultPaymentTerms, &user.InvoiceNumberPrefix, &user.NextInvoiceNumber, &user.EmailVerified, &user.IsActive, &LastLoginAt, &user.UpdatedAt, &user.CreatedAt,
 	)
 
 	if err == sql.ErrNoRows {
@@ -153,6 +167,12 @@ func (s *UserService) GetUserByID(id uuid.UUID) (*domain.User, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	// same , converting sql.NullTime *time.Time
+
+	if LastLoginAt.Valid {
+		user.LastLoginAt = &LastLoginAt.Time
 	}
 
 	return user, nil
