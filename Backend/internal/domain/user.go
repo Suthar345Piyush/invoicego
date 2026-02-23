@@ -1,6 +1,3 @@
-// setting domain model - user
-// user related types defination
-
 package domain
 
 import (
@@ -9,13 +6,10 @@ import (
 	"github.com/google/uuid"
 )
 
-// setting some user things
-// user's data returns in json format
-
 type User struct {
 	ID                  uuid.UUID  `json:"id"`
 	Email               string     `json:"email"`
-	PasswordHash        string     `json:"-"` // hash code of the password
+	PasswordHash        string     `json:"-"`
 	FullName            string     `json:"full_name"`
 	BusinessName        *string    `json:"business_name,omitempty"`
 	BusinessAddress     *string    `json:"business_address,omitempty"`
@@ -35,10 +29,8 @@ type User struct {
 	IsActive            bool       `json:"is_active"`
 	CreatedAt           time.Time  `json:"created_at"`
 	UpdatedAt           time.Time  `json:"updated_at"`
-	LastLoginAt         *time.Time `json:"last_login_at"`
+	LastLoginAt         *time.Time `json:"last_login_at,omitempty"`
 }
-
-// registration request struct
 
 type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email"`
@@ -48,7 +40,7 @@ type RegisterRequest struct {
 
 type LoginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,password"`
+	Password string `json:"password" validate:"required"`
 }
 
 type LoginResponse struct {
