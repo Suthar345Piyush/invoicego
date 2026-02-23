@@ -35,7 +35,7 @@ type User struct {
 	IsActive            bool       `json:"is_active"`
 	CreatedAt           time.Time  `json:"created_at"`
 	UpdatedAt           time.Time  `json:"updated_at"`
-	LastLoginAt         *time.Time `json:"last_login_at,omitempty"`
+	LastLoginAt         *time.Time `json:"last_login_at"`
 }
 
 // registration request struct
@@ -48,7 +48,7 @@ type RegisterRequest struct {
 
 type LoginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Password string `json:"password" validate:"required,password"`
 }
 
 type LoginResponse struct {
