@@ -1,3 +1,1 @@
--- dropping the clients table 
-
-DROP TABLE IF EXISTS clients;
+DROP TABLE IF EXISTS clients CASCADE;
