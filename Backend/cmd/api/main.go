@@ -31,6 +31,17 @@ func main() {
 		log.Fatal("Failed to load config:", err)
 	}
 
+	// some logs for debugging
+
+	fmt.Printf("=== DEBUG CONFIG ===\n")
+	fmt.Printf("DB_HOST: %s\n", cfg.Database.Host)
+	fmt.Printf("DB_PORT: %s\n", cfg.Database.Port)
+	fmt.Printf("DB_USER: %s\n", cfg.Database.User)
+	fmt.Printf("DB_PASSWORD: %s\n", cfg.Database.Password)
+	fmt.Printf("DB_NAME: %s\n", cfg.Database.DBName)
+	fmt.Printf("Connection String : %s\n", cfg.Database.ConnectionString())
+	fmt.Printf("=============================\n")
+
 	// connecting to DB
 
 	db, err := database.New(cfg.Database.ConnectionString())

@@ -99,7 +99,7 @@ func Load() (*Config, error) {
 
 			CORS: CORSConfig{
 				AllowedOrigins: []string{
-					getEnv("ALLOWED_ORIGINS", "https://localhost:3000"),
+					getEnv("ALLOWED_ORIGINS", "http://localhost:3000"),
 				},
 			},
 		},
@@ -137,7 +137,7 @@ func getEnvAsInt(key string, defaultValue int) int {
 
 	// converting string key to integer
 
-	if value, err := strconv.Atoi(valueStr); err != nil {
+	if value, err := strconv.Atoi(valueStr); err == nil {
 		return value
 	}
 
