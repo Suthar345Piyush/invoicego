@@ -36,7 +36,7 @@ func New(connectionString string) (*DB, error) {
 	// Ping() to verify the valid connection
 
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("error connectiong to database: %w", err)
+		return nil, fmt.Errorf("error connecting to database: %w", err)
 	}
 
 	fmt.Println("Database connection established")
