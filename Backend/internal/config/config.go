@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -83,12 +84,12 @@ func Load() (*Config, error) {
 			// db config
 
 			Database: DatabaseConfig{
-				Host:     getEnv("DB_HOST", "localhost"),
-				Port:     getEnv("DB_PORT", "5432"),
-				User:     getEnv("DB_USER", "postgres"),
-				Password: getEnv("DB_PASSWORD", "postgres"),
-				DBName:   getEnv("DB_NAME", "invoicego"),
-				SSLMode:  getEnv("DB_SSLMODE", "disable"),
+				Host:     strings.TrimSpace(getEnv("DB_HOST", "localhost")),
+				Port:     strings.TrimSpace(getEnv("DB_PORT", "5432")),
+				User:     strings.TrimSpace(getEnv("DB_USER", "postgres")),
+				Password: strings.TrimSpace(getEnv("DB_PASSWORD", "postgres")),
+				DBName:   strings.TrimSpace(getEnv("DB_NAME", "invoicego")),
+				SSLMode:  strings.TrimSpace(getEnv("DB_SSLMODE", "disable")),
 			},
 
 			JWT: JWTConfig{
