@@ -2,7 +2,7 @@ CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255),
+    email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(50),
     company_name VARCHAR(255),
     address_line1 VARCHAR(255),
